@@ -1,2 +1,5 @@
-# tic-tac-toe-game
-One Player tic-tac-toe game
+# Description
+One player tic-tac-toe game created by Nursima Donuk
+
+# Languages Used
+HTML CSS Java Script
