@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!--w3schools color website -->
+    <meta name="description" content="this is a tictactoe game">
+    <title style="color: green"> TicTacToe Game </title>
+    <link rel="stylesheet" href="tictactoe.css" />
+    <script>
+
+      function startTwoPlayer() {
+        document.player = "noone";
+        document.getElementById("one").style.visibility = "hidden";
+        document.getElementById("two").style.visibility = "hidden";
+        document.getElementById("play").style.visibility = "visible";
+        if(Math.random() > 0.5) {
+          document.turn = "x";
+        } else {
+          document.turn = "o";
+        }
+        document.winner = null;
+        setMessage(document.turn + " gets to start.");
+      }
+
+      var board = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+
+/*      function whoStarts() {
+        var num = Math.random();
+        if (num < 0.25) {
+          setMessage("You are x and I am o. You will start first.");
+          document.human = "x";
+          document.comp = "o";
+          document.turn = "x";
+          document.player = "user";
+        }else if (num >= 0.25 && num < 0.5) {
+          setMessage("You are x and I am o. I will start first.");
+          document.human = "x";
+          document.comp = "o";
+          document.turn = "o";
+          document.player = "computer";
+        }else if (num >= 0.5 && num < 0.75) {
+          setMessage("You are o and I am x. You will start first.");
+          document.human = "o";
+          document.comp = "x";
+          document.turn = "o";
+          document.player = "user";
+        }else {
+          setMessage("You are o and I am x. I will start first.");
+          document.human = "o";
+          document.comp = "x";
+          document.turn = "x";
+          document.player = "computer";
+        }
+      }
+*/
+
+      function startOnePlayer() {
+        document.getElementById("one").style.visibility = "hidden";
+        document.getElementById("two").style.visibility = "hidden";
+        document.getElementById("hard").style.visibility = "visible";
+        document.getElementById("easy").style.visibility = "visible";
+        setMessage("Choose the dificulty of the game.");
+        document.winner = null;
+      }
+
+
+
+      function playAgainHard() {
+        document.getElementById("hard").style.visibility = "hidden";
+        document.getElementById("easy").style.visibility = "hidden";
+        document.getElementById("play").style.visibility = "visible";
+        document.mode = "hard";
+        //whoStarts();
+        document.player = "computer";
+        document.turn = "o";
+        document.computer = "o";
+        document.human = "x";
+        setMessage("I will start first, I am o");
+        if(document.player == "computer") {
+          turn(bestSpot(), document.comp);
+        }
+      }
+
+
+      function playAgainEasy() {
+        document.getElementById("hard").style.visibility = "hidden";
+        document.getElementById("easy").style.visibility = "hidden";
+        document.getElementById("play").style.visibility = "visible";
+        document.mode = "easy";
+        //whoStarts();
+        document.player = "user";
+        document.turn = "o";
+        document.human = "o";
+        document.computer = "x";
+        setMessage("you will start first, you are o");
+
+      }
+
+
+      function emptySquares() {
+        var emptysq = [];
+        for(var i = 0; i < 9; i++) {
+          if (getBox(i) != "x" && getBox(i) != "o") { //if its not an x and its not an o
+            emptysq.push(i); //then it must br empty
+          }
+        }
+        return emptysq;
+      }
+
+
+      function bestSpot() {
+        var list = emptySquares();
+        return list[0]
+      }
+
+      function checkTie() {
+        var emptySquares = 0;
+        for (var i = 0; i < 9; i++) {
+          if(getBox(i) == "") {
+            emptySquares++;
+          }
+        }
+        if(emptySquares == 0 && !checkForWin(document.human) && !checkForWin(document.comp)) {
+          for (var i = 0; i < cells.length; i++) {
+            cells[i].style.backgroundColor = "lightblue";
+            cells[i].removeEventListener('click', click, false);
+          }
+          return true;
+        }else {
+          return false;
+        }
+      }
+
+      function turn(squareId, palyer) {
+        board[squareId] = player;
+        document.getElementById(squareId).innerText = player;
+        switchPlayer();
+      }
+
+
+/*      function computerTurnHard() {
+        var empty = 0;
+        for(var i = 0; i < 9; i++) {
+          if(getBox(i) == "") {
+            empty++;
+          }
+        }
+        if (almostWin(document.turn)) {
+          document.getElementById(criticalBox).innerText = document.turn;
+        }else if (almostWin(othersign(document.turn))) {
+          document.getElementById(criticalBox).innerText = document.turn;
+        }else if (empty == 9) { // first move computer
+          document.getElementById(2).innerText = document.turn; //corner game
+        }else if (empty == 7) {
+          if (getBox(4) != "") {
+            document.getElementById(6).innerText = document.turn;
+          }else {
+            if(getBox(0) != "" || getBox(1) != "" || getBox(7) != "") {
+              document.getElementById(8).innerText = document.turn;
+            }else if (getBox(3) != "" || getBox(5) != "" || getBox(6) != "" || getBox(8) != "") {
+              document.getElementById(0).innerText = document.turn;
+            }
+          }
+        }else if (empty == 5) {
+          if ((getBox(0) != "" && getBox(8) != "") || (getBox(1) != "" && getBox(8) != "") || (getBox(0) != "" && getBox(5) != "")) {
+            document.getElementById(6).innerText = document.turn;
+          }else if ((getBox(0) != "" && getBox(3) != "") || (getBox(0) != "" && getBox(6) != "")) {
+            document.getElementById(8).innerText = document.turn;
+          }else if (getBox(7) != "" && getBox(8) != "") {
+            document.getElementById(0).innerText = document.turn;
+          }
+        }else if (empty == 8) {
+          if(getBox(4) != "") {
+            document.getElementById(0).innerText = document.turn;
+          }
+        }
+        switchPlayer();
+      }
+
+
+      function computerTurnEasy() {
+        if (almostWin(document.turn)) {
+          document.getElementById(criticalBox).innerText = document.turn;
+        }else if (almostWin(othersign(document.turn))) {
+          document.getElementById(criticalBox).innerText = document.turn;
+        }else {
+          var num = Math.random();
+          if (num < 0.5) {
+            for(var i = 0; i < 9; i++) {
+              if(document.getElementById(i).innerText == "") {
+                document.getElementById(i).innerText = document.turn;
+                i = 9;
+                break;
+              }
+            }
+          }else {
+            for(var i = 8; i >= 0; i--) {
+              if (document.getElementById(i).innerText == "") {
+                document.getElementById(i).innerText = document.turn;
+                i = -1;
+                break;
+              }
+            }
+          }
+        }
+        switchPlayer();
+      }
+
+*/
+      function userTurn(sqr) {
+        if (document.winner != null) { //if someone has won
+          setMessage("The game is over, click the button to play again.");
+        }else if (sqr.innerText == "") { //if the box is available
+          sqr.innerText = document.turn; //set the innertext to humans turn
+          board[sqr.target.id] = document.turn; //and also update the array where we keep track of the board
+          switchPlayer();
+        }else {
+          setMessage("That square is already used.");
+        }
+      }
+
+
+      function nextMove(box) {
+        if(document.player == "noone") { //if it is a two player game;
+          if (document.winner != null) {
+            setMessage("The game is over, click the button to play again.");
+          }else if (box.innerText == "") {
+            box.innerText = document.turn;
+            switchTurn();
+          }else {
+            setMessage("That square is already used.");
+          }
+        }else if(document.player == "user") { //it's the user turn in one player game
+          userTurn(box);
+        }
+      }
+
+
+      function switchPlayer() { //one player game, switches sign and player
+        if(checkTie()) {
+          setMessage ("It's a tie.");
+        }else if(checkForWin(document.turn)) {
+          if (document.player == "user") {
+            setMessage("Congratulations, you won!");
+          }else {
+            setMessage("Game over, you lost :(");
+          }
+        }else if (document.turn == "x" && document.player == "user") {
+          document.turn = "o";
+          document.player = "computer";
+          if (mode == "hard") {
+            turn(bestSpot(), document.turn);
+          }else if (mode == "easy") {
+            turn(bestSpot(), document.turn);
+          }
+
+        }else if (document.turn == "x" && player == "computer"){
+          document.turn = "o";
+          document.player = "user";
+
+        }else if (document.turn == "o" && player == "computer") {
+          document.turn = "x";
+          document.player = "user";
+
+        }else if (document.turn == "o" && player == "user") {
+          document.turn = "x";
+          player = "computer";
+
+          if (mode == "hard") {
+            turn(bestSpot(), document.turn);
+          }else if (mode == "easy") {
+            turn(bestSpot(), document.turn);
+          }
+
+        }
+      }
+
+
+      function switchTurn() { //for 2 player game
+        if(checkTie()) {
+          setMessage("It's a tie.");
+        }else if(checkForWin(document.turn)) {
+          setMessage("Congratulations, " + document.turn + "! You won!");
+        }else if(document.turn == "x") {
+          document.turn = "o";
+          setMessage("It's o's turn.");
+        }else {
+          document.turn = "x";
+          setMessage("It's x's turn.");
+        }
+      }
+
+
+      function othersign(sign) {
+        if(sign == "x") {
+          return "o";
+        }else {
+          return "x";
+        }
+      }
+
+
+      function setMessage(msg) {
+        document.getElementById("message").innerText = msg;
+      }
+
+
+      function almostWin(sign) {
+        var result = false;
+        if (checkForAlmostWin(0, 1, 2, sign) ||
+        checkForAlmostWin(3, 4, 5, sign) ||
+        checkForAlmostWin(6, 7, 8, sign) ||
+        checkForAlmostWin(0, 3, 6, sign) ||
+        checkForAlmostWin(1, 4, 7, sign) ||
+        checkForAlmostWin(2, 5, 8, sign) ||
+        checkForAlmostWin(0, 4, 8, sign) ||
+        checkForAlmostWin(2, 4, 6, sign)) {
+          result = true;
+        }
+        return result;
+      }
+
+
+      function checkForAlmostWin(a, b, c, sign) {
+        var result = false;
+        if(getBox(a) == sign && getBox(b) == sign && getbox(c) == ""){
+          criticalBox = c;
+          result = true;
+        }else if(getBox(a) == sign && getBox(b) == "" && getbox(c) == sign){
+          criticalBox = b;
+          result = true;
+        }else if(getBox(a) == "" && getBox(b) == sign && getbox(c) == sign){
+          criticalBox = a;
+          result = true;
+        }
+        return result;
+      }
+
+
+      function checkForWin(sign) {
+        var result = false;
+        if (checkRow(0, 1, 2, sign) ||
+        checkRow(3, 4, 5, sign) ||
+        checkRow(6, 7, 8, sign) ||
+        checkRow(0, 3, 6, sign) ||
+        checkRow(1, 4, 7, sign) ||
+        checkRow(2, 5, 8, sign) ||
+        checkRow(0, 4, 8, sign) ||
+        checkRow(2, 4, 6, sign)) {
+          document.winner = sign;
+          result = true;
+        }
+        return result;
+      }
+
+
+      function checkRow(a, b, c, sign) {
+        var result = false;
+        if(getBox(a) == sign && getBox(b) == sign && getBox(c) == sign) {
+          result = true;
+        }
+        return result;
+      }
+
+
+      function getBox(number) {
+        return document.getElementById(number).innerText;
+      }
+
+
+    </script>
+  </head>
+  <body >
+    <div class="header">
+      <p style="color: #3498db"> Welcome to the game of tictactoe!</p>
+      <p style="color: white; background-color: #3498db"> Choose one: </p>
+    </div>
+
+    <div class="container">
+      <button class="btn btn1" id="one" onclick="startTwoPlayer();">One Player</button>
+      <button class="btn btn2" id = "two" onclick="startTwoPlayer();">Two Players</button>
+      <br>
+      <button class="btn btn3" id="hard" onclick="playAgainHard();" style="visibility:hidden">Hard</button>
+      <button class="btn btn4" id="easy" onclick="playAgainEasy();" style="visibility: hidden">Easy</button>
+      <br>
+      <button class="btn btn5" id="play" value="Refresh Page" onclick="window.location.reload();" style="visibility: hidden">Play Again</button>
+    </div>
+    <div id = "message" class = "message">Tic Tac Toe</div>
+    <div id="grid" class="grid">
+      <table class="table" border= 5>
+        <tr class="row">
+          <td id="0" class="cell" onclick="nextMove(this);"></td>
+          <td id="1" class="cell" onclick="nextMove(this);"></td>
+          <td id="2" class="cell" onclick="nextMove(this);"></td>
+        </tr>
+        <tr class="row">
+          <td id="3" class="cell" onclick="nextMove(this);"></td>
+          <td id="4" class="cell" onclick="nextMove(this);"></td>
+          <td id="5" class="cell" onclick="nextMove(this);"></td>
+        </tr>
+        <tr class="row">
+          <td id="6" class="cell" onclick="nextMove(this);"></td>
+          <td id="7" class="cell" onclick="nextMove(this);"></td>
+          <td id="8" class="cell" onclick="nextMove(this);"></td>
+        </tr>
+      </table>
+    </div>
+
+  </body>
+
+</html>
+
+<<!--
+function refresh(number) {
+  document.getElementById(number).innerText = "";
+}
+
+for(var i = 0; i < 9; i++) {
+  refresh(i);
+}
+-->
